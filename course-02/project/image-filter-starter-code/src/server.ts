@@ -1,6 +1,6 @@
 import express, { Request } from 'express';
 import bodyParser from 'body-parser';
-import {filterImageFromURL, deleteLocalFiles, cleanTmpFolder} from './util/util';
+import {filterImageFromURL, deleteLocalFiles} from './util/util';
 
 (async () => {
 
@@ -39,10 +39,13 @@ import {filterImageFromURL, deleteLocalFiles, cleanTmpFolder} from './util/util'
     try {
       const filteredImage:string = await filterImageFromURL(imageUrl);
       res.status(200).sendFile(filteredImage, () => {
+        console.info(`Filtered image ${imageUrl} successfully`);
         deleteLocalFiles([filteredImage]);
       });      
     } catch(reason) {
-      res.status(422).send(`Error processing the image at ${imageUrl}: ${reason}`)
+      const errorMessage = `Error processing the image at ${imageUrl}: ${reason}`;
+      console.error(errorMessage)
+      res.status(422).send(errorMessage)
     }
 
   } );
